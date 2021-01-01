@@ -76,9 +76,7 @@ songplay_table_insert = ("""
       session_id, 
       location, 
       user_agent)
-    VALUES ( %s, %s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT
-    DO NOTHING;
+    VALUES ( %s, %s, %s, %s, %s, %s, %s, %s);
 """)
 
 user_table_insert = ("""
@@ -88,9 +86,9 @@ user_table_insert = ("""
       last_name, 
       gender, 
       level)
-    VALUES (%s, %s, %s, %s, %s)
-    ON CONFLICT 
-    DO NOTHING;
+    VALUES (%s, %s, %s, %s, %s) 
+    ON CONFLICT (user_id)
+    DO UPDATE SET level = EXCLUDED.level;
 """)
 
 song_table_insert = ("""
@@ -101,7 +99,7 @@ song_table_insert = ("""
       year, 
       duration)
     VALUES (%s, %s, %s, %s, %s)
-    ON CONFLICT 
+    ON CONFLICT (song_id)
     DO NOTHING;
 """)
 
@@ -113,13 +111,14 @@ artist_table_insert = ("""
       latitude, 
       longitude)
     VALUES (%s, %s, %s, %s, %s)
-    ON CONFLICT 
+    ON CONFLICT (artist_id)
     DO NOTHING;
 """)
 
 
 time_table_insert = ("""
-    INSERT INTO time (start_time, 
+    INSERT INTO time (
+      start_time, 
       hour, 
       day, 
       week, 
@@ -127,7 +126,7 @@ time_table_insert = ("""
       year, 
       weekday)
     VALUES (%s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT 
+    ON CONFLICT (start_time)
     DO NOTHING;
 """)
 
