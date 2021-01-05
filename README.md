@@ -35,3 +35,10 @@ Using the song and log datasets, you'll need to create a star schema optimized f
     *   _artist_id, name, location, latitude, longitude_
 4.  **time** - timestamps of records in **songplays** broken down into specific units
     *   _start_time, hour, day, week, month, year, weekday_
+
+## ETL Pipeline
+The ETL operation defined in `etl.py` consists of the following operations:
+- Connect to the database, and preprocess the song_data and the log_data directories.
+- The preprocessing function read all JSON files from `data/song_data` and `data/log_data`, iterate over all JSON files and preprocess accordingly either using `process_log_file` or `process_song_file`.
+- `process_song_file`: Extract song table from a JSON file, transform it by selecting specific columns and load it to the database.
+- `process_log_file`: Extract data from a logfile JSON file, transform it by creating three tables (user, time and songplay) and load its records into the database. 
