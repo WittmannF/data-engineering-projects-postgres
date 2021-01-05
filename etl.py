@@ -6,6 +6,18 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """
+    Extract song table from a JSON file, transform it by selecting specific 
+    columns and load it to the database.
+
+    Parameters
+    ----------
+    cur : psycopg2.extensions.cursor
+        A database cursor
+    filepath : string
+        Filepath to a valid JSON file
+    """
+    
     # open song file
     df = pd.read_json(filepath, lines=True) 
 
@@ -16,14 +28,26 @@ def process_song_file(cur, filepath):
     cur.execute(song_table_insert, song_data)
     
     # insert artist record
-    cols=['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']
+    cols=['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 
+          'artist_longitude']
     artist_data = list(df[cols].values[0]) 
     cur.execute(artist_table_insert, artist_data)
 
 
 def process_log_file(cur, filepath):
+    """
+    Extract data from a logfile JSON file, transform it and load into the following 
+    tables: user, time and songplay. 
+
+    Parameters
+    ----------
+    cur : psycopg2.extensions.cursor
+        A database cursor
+    filepath : string
+        Filepath to a valid JSON file
+    """
     # open log file
-    df = df = pd.read_json(filepath, lines=True)
+    df = pd.read_json(filepath, lines=True)
 
     # filter by NextSong action
     df = df.query('page=="NextSong"')
@@ -79,6 +103,21 @@ def process_log_file(cur, filepath):
 
 
 def process_data(cur, conn, filepath, func):
+    """
+    Read all JSON files from `filepath`, iterate over files and preprocess
+    using function defined in `func`.
+
+    Parameters
+    ----------
+    cur : psycopg2.extensions.cursor
+        A database cursor
+    conn : psycopg2.extensions.connection
+        A connection object
+    filepath : string
+        Filepath to a directory containing JSON files
+    func : function
+        Function to preprocess each JSON file
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -98,6 +137,10 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """
+    Main function. Connect to the database, and preprocess the song_data and the log_data
+    directories.
+    """
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
